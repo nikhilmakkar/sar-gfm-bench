@@ -1,9 +1,7 @@
 """Evaluation entry point (mirrors tools/train.py path setup).
 
 Usage:
-    python tools/test.py configs/capella/zeroshot_dinov2l.py \
-        --checkpoint work_dirs/orcnn_dinov2l_frozen_fold0/best_dota_mAP_epoch_N.pth \
-        --work-dir work_dirs/capella_zeroshot_dinov2l_fold0
+    python tools/test.py CONFIG --checkpoint CHECKPOINT [--work-dir DIR]
 """
 
 import argparse

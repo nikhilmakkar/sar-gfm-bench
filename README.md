@@ -17,7 +17,6 @@ wrapper.
 - A shared four-level ViTDet adapter emitting strides 8, 16, 32, and 64.
 - Oriented R-CNN configs for four-fold cross-acquisition evaluation and an
   in-domain spatial split.
-- Capella cross-sensor evaluation code.
 - Training, evaluation, result collection, and dataset-conversion utilities.
 - CPU shape tests for the shared adapter.
 
@@ -100,21 +99,12 @@ Collect the best per-fold AP values from MMEngine logs:
 python tools/collect_results.py --work-dir work_dirs
 ```
 
-For Capella conversion, provide the source explicitly; generated chips remain
-ignored by Git:
-
-```bash
-python data/capella_cvat_to_dota.py   --src /path/to/cvat-export   --out datasets/capella_test
-```
-
 ## Repository layout
 
 ```text
 adapters/    shared ViT-to-FPN feature adapter
 backbones/   model wrappers and required vendored model components
 configs/     shared detector and per-model experiment configs
-data/        conversion utilities (no datasets)
-evals/       evaluation adapters
 tests/       lightweight checks
 tools/       training, testing, and result collection
 ```
