@@ -7,7 +7,7 @@ _base_ = [
     '../_base_/orcnn_gfm.py',
     '../_base_/schedules/frozen_12e.py',
     '../_base_/default_runtime.py',
-    '../../../GrokSAR/configs/_base_/datasets/Umbra_512_CV_fold2.py',
+    '../_base_/datasets/umbra_cv_fold2.py',
 ]
 
 model = dict(

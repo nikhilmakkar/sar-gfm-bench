@@ -1,0 +1,133 @@
+diff --git a/groksar/evaluation/functional/mean_ap.py b/groksar/evaluation/functional/mean_ap.py
+index d5433e7..324abc1 100644
+--- a/groksar/evaluation/functional/mean_ap.py
++++ b/groksar/evaluation/functional/mean_ap.py
+@@ -7,9 +7,15 @@ from mmengine.utils import is_str
+ from terminaltables import AsciiTable
+
+ from mmdet.evaluation.functional.bbox_overlaps import bbox_overlaps
++from mmcv.ops import box_iou_rotated
++import torch
+ from mmdet.evaluation.functional.class_names import get_classes
+
+
++def rbbox_iou(b1, b2):
++    return box_iou_rotated(torch.from_numpy(b1).float(), torch.from_numpy(b2).float()).numpy()
++
++
+ def average_precision(recalls, precisions, mode='area'):
+     """Calculate average precision (for single or multiple scales).
+
+@@ -117,8 +123,13 @@ def tpfp_imagenet(det_bboxes,
+             for i, (min_area, max_area) in enumerate(area_ranges):
+                 fp[i, (det_areas >= min_area) & (det_areas < max_area)] = 1
+         return tp, fp
+-    ious = bbox_overlaps(
+-        det_bboxes, gt_bboxes - 1, use_legacy_coordinate=use_legacy_coordinate)
++    if det_bboxes.shape[1] >= 5 and gt_bboxes.shape[1] >= 5:
++
++        ious = rbbox_iou(det_bboxes[:, :5], gt_bboxes[:, :5])
++
++    else:
++
++        ious = bbox_overlaps(det_bboxes, gt_bboxes - 1, use_legacy_coordinate=use_legacy_coordinate)
+     gt_w = gt_bboxes[:, 2] - gt_bboxes[:, 0] + extra_length
+     gt_h = gt_bboxes[:, 3] - gt_bboxes[:, 1] + extra_length
+     iou_thrs = np.minimum((gt_w * gt_h) / ((gt_w + 10.0) * (gt_h + 10.0)),
+@@ -230,8 +241,16 @@ def tpfp_default(det_bboxes,
+                 fp[i, (det_areas >= min_area) & (det_areas < max_area)] = 1
+         return tp, fp
+
+-    ious = bbox_overlaps(
+-        det_bboxes, gt_bboxes, use_legacy_coordinate=use_legacy_coordinate)
++    if det_bboxes.shape[1] >= 5 and gt_bboxes.shape[1] >= 5:
++
++
++        ious = rbbox_iou(det_bboxes[:, :5], gt_bboxes[:, :5])
++
++
++    else:
++
++
++        ious = bbox_overlaps(det_bboxes, gt_bboxes, use_legacy_coordinate=use_legacy_coordinate)
+     # for each det, the max iou with all gts
+     ious_max = ious.max(axis=1)
+     # for each det, which gt overlaps most with it
+diff --git a/groksar/evaluation/metrics/dota_big2small_metric.py b/groksar/evaluation/metrics/dota_big2small_metric.py
+index 1b9c568..620d6b6 100644
+--- a/groksar/evaluation/metrics/dota_big2small_metric.py
++++ b/groksar/evaluation/metrics/dota_big2small_metric.py
+@@ -286,6 +286,13 @@ class DotaBig2SmallMetric(BaseMetric):
+                     bboxes=gt_instances['bboxes'].cpu().numpy(),
+                     bboxes_ignore=gt_ignore_instances['bboxes'].cpu().numpy(),
+                     labels_ignore=gt_ignore_instances['labels'].cpu().numpy())
++
++                # ALWAYS PRINT - remove the if condition
++                # print(f"\nDEBUG GT PROCESS - img_id: {data_sample['img_id']}")
++                # print(f"DEBUG GT PROCESS - bbox shape: {ann['bboxes'].shape}")
++                # if len(ann['bboxes']) > 0:
++                #     print(f"DEBUG GT PROCESS - first bbox: {ann['bboxes'][0]}")
++
+             result = dict()
+             pred = data_sample['pred_instances']
+             result['img_id'] = data_sample['img_id']
+@@ -347,8 +354,11 @@ class DotaBig2SmallMetric(BaseMetric):
+                 origin_name = img_id.split("__")[0]
+                 pattern1 = re.compile(r'__\d+___\d+')
+                 x_y = re.findall(pattern1, img_id)
+-                x_y_2 = re.findall(r'\d+', x_y[0])
+-                x, y = int(x_y_2[0]), int(x_y_2[1])
++                if x_y:
++                    x_y_2 = re.findall(r'\d+', x_y[0])
++                    x, y = int(x_y_2[0]), int(x_y_2[1])
++                else:
++                    x, y = 0, 0  # standalone patch, no offset needed
+                 labels = result['labels'].astype(np.float32)
+                 bboxes = result['bboxes']
+                 scores = result['scores'].astype(np.float32)
+@@ -364,9 +374,20 @@ class DotaBig2SmallMetric(BaseMetric):
+                         [x, y, x, y], dtype=np.float32)
+                 else:
+                     raise NotImplementedError
++
++                # ADD DEBUG HERE:
++                # print(f"\nDEBUG PRED #{idx} - Patch: {img_id}")
++                # print(f"DEBUG PRED - Offset: x={x}, y={y}")
++                # print(f"DEBUG PRED - Num predictions: {len(bboxes)}")
++                # if len(bboxes) > 0:
++                #     print(f"DEBUG PRED - Patch coords: {bboxes[0]}")
++                #     print(f"DEBUG PRED - Orig coords: {ori_bboxes[0]}")
++
++
+                 # concat bbox scores
+                 ori_bbox_scores = np.concatenate([labels[:, np.newaxis], ori_bboxes,
+                                                   scores[:, np.newaxis]], axis=1)
++
+
+                 if dets_collector[origin_name].__len__() == 0:
+                     dets_collector[origin_name]['pred_bbox_scores'] = ori_bbox_scores
+@@ -377,8 +398,16 @@ class DotaBig2SmallMetric(BaseMetric):
+                 # process gts
+                 if origin_names.__contains__(origin_name) is not True:
+                     origin_names.append(origin_name)
++
++                    # # ADD THIS DEBUG CODE HERE:
++                    # if len(gts[idx]['bboxes']) > 0:
++                    #     print(f"\nDEBUG GT - Origin: {origin_name}")
++                    #     print(f"DEBUG GT - First bbox: {gts[idx]['bboxes'][0]}")
++
++
+                     gts_collector.append(gts[idx])
+
++
+             id_list, dets_list = [], []
+             for _, label_dets_list in dets_collector.items():
+                 big_img_results = []
+@@ -415,6 +444,7 @@ class DotaBig2SmallMetric(BaseMetric):
+             for iou_thr in self.iou_thrs:
+                 if iou_thr == 0.5:
+                     logger.info(f'\n{"-" * 15}iou_thr: {iou_thr}{"-" * 15}')
++
+                 mean_ap, _ = eval_map(
+                     dets,
+                     gts,

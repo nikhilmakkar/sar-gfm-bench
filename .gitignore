@@ -1,10 +1,10 @@
 # Data and generated artifacts
-datasets/
-data/raw/
-weights/
-work_dirs/
-outputs/
-notes/
+/datasets/
+/data/raw/
+/weights/
+/work_dirs/
+/outputs/
+/notes/
 *.pth
 *.pt
 *.ckpt
