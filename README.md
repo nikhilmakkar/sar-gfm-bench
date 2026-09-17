@@ -1,12 +1,36 @@
-# SAR-GFM-Bench
+# SAR-GFM-Bench: Foundation Models for SAR Aircraft Detection
 
-A controlled implementation for comparing vision and geospatial foundation
-models as backbones for high-resolution SAR aircraft detection.
+[![CI](https://github.com/nikhilmakkar/sar-gfm-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/nikhilmakkar/sar-gfm-bench/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+An open implementation for benchmarking **14 vision, SAR, and geospatial
+foundation-model configurations** as backbones for oriented aircraft detection
+in high-resolution Umbra synthetic aperture radar (SAR) imagery. It provides a
+shared Oriented R-CNN evaluation stack, model wrappers, public-data preparation
+tools, and acquisition-grouped cross-validation.
 
 Every encoder is evaluated through the same trainable ViTDet-style adapter,
 feature pyramid, and Oriented R-CNN head. The shared input contract is a
 three-channel copy of the same 8-bit SAR amplitude image scaled to `[0, 1]`;
 model-specific normalization and modality adaptation live in each wrapper.
+
+## Benchmark results
+
+![Bar chart of SAR-GFM-Bench mean cross-acquisition aircraft detection AP50 results. DINOv2-L frozen leads at 0.400, followed by finetuned SARATR-X at 0.394 and DINOv3-L web at 0.384.](docs/assets/sar-gfm-benchmark-results.svg)
+
+The main finding is that **generic visual pretraining transferred better than
+the tested geospatial foundation models** for high-resolution SAR aircraft
+detection. Frozen DINOv2-L achieved the highest four-fold mean AP@0.5 (`0.400`),
+closely followed by finetuned SARATR-X (`0.394`) and frozen web-pretrained
+DINOv3-L (`0.384`). DINOv3-SAT was the strongest frozen geospatial model
+(`0.338`). The large variation between acquisitions—especially the difficult
+fold 2—also shows why random chip-level splits can overstate performance.
+
+These are DOTA 11-point AP@0.5 reference results, using the best validation AP
+over 12 epochs on each of four acquisition-grouped folds. See the complete
+[per-fold results and interpretation](RESULTS.md) and the companion article,
+[Performance of Geo Foundation Models for Object Detection on High Resolution
+SAR Images](https://nikhilmakkar.substack.com/p/performance-of-geo-foundation-models).
 
 ## Reproducibility boundary
 
@@ -175,3 +199,14 @@ notices are under `third_party_licenses/`.
 Umbra Open Data is not part of this repository. Users who download or publish
 derived imagery must comply with Umbra's CC BY 4.0 attribution requirements.
 User-created annotations are governed by the license chosen by their creator.
+
+## Citation
+
+For the benchmark implementation, model wrappers, or data-preparation tools,
+use GitHub's **Cite this repository** control, which reads
+[`CITATION.cff`](CITATION.cff). When discussing the reported results or their
+interpretation, cite the companion article and link this repository so readers
+can inspect the implementation:
+
+> Makkar, N. “Performance of Geo Foundation Models for Object Detection on
+> High Resolution SAR Images.” *Substack*, 2026.

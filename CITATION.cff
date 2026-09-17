@@ -2,7 +2,9 @@ cff-version: 1.2.0
 message: >-
   If you use this software or its reported benchmark results, please cite the
   repository and companion article.
-title: SAR-GFM-Bench
+title: >-
+  SAR-GFM-Bench: Benchmarking Vision and Geospatial Foundation Models for SAR
+  Aircraft Detection
 type: software
 authors:
   - family-names: Makkar
@@ -14,3 +16,12 @@ url: https://nikhilmakkar.substack.com/p/performance-of-geo-foundation-models
 abstract: >-
   A controlled implementation for comparing vision and geospatial foundation
   models as backbones for high-resolution SAR aircraft detection.
+keywords:
+  - synthetic aperture radar
+  - SAR aircraft detection
+  - geospatial foundation models
+  - vision foundation models
+  - Earth observation
+  - oriented object detection
+  - Umbra Open Data
+  - benchmark

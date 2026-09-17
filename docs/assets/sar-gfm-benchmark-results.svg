@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820" role="img" aria-labelledby="title description">
+  <title id="title">SAR-GFM-Bench mean cross-acquisition aircraft detection AP50 results</title>
+  <desc id="description">DINOv2-L frozen ranks first at 0.400 mean AP50, SARATR-X HiViT-B finetuned ranks second at 0.394, and DINOv3-L web frozen ranks third at 0.384 across four acquisition-grouped folds.</desc>
+  <rect width="1200" height="820" fill="#ffffff"/>
+  <style>
+    .title { font: 700 28px system-ui, sans-serif; fill: #172033; }
+    .subtitle { font: 16px system-ui, sans-serif; fill: #526078; }
+    .label { font: 15px system-ui, sans-serif; fill: #172033; }
+    .value { font: 700 15px system-ui, sans-serif; fill: #172033; }
+    .legend { font: 14px system-ui, sans-serif; fill: #526078; }
+    .grid { stroke: #dce2ea; stroke-width: 1; }
+  </style>
+  <text x="32" y="44" class="title">Cross-acquisition SAR aircraft detection benchmark</text>
+  <text x="32" y="72" class="subtitle">Mean DOTA 11-point AP@0.5 over four acquisition-grouped folds (higher is better)</text>
+
+  <rect x="32" y="94" width="14" height="14" rx="2" fill="#2563eb"/><text x="54" y="106" class="legend">general vision / ImageNet</text>
+  <rect x="252" y="94" width="14" height="14" rx="2" fill="#ea580c"/><text x="274" y="106" class="legend">SAR-specific</text>
+  <rect x="402" y="94" width="14" height="14" rx="2" fill="#16865a"/><text x="424" y="106" class="legend">geospatial / Earth observation</text>
+
+  <line x1="430" y1="126" x2="430" y2="736" class="grid"/>
+  <line x1="582" y1="126" x2="582" y2="736" class="grid"/>
+  <line x1="735" y1="126" x2="735" y2="736" class="grid"/>
+  <line x1="887" y1="126" x2="887" y2="736" class="grid"/>
+  <line x1="1040" y1="126" x2="1040" y2="736" class="grid"/>
+  <text x="426" y="758" class="legend">0.0</text><text x="574" y="758" class="legend">0.1</text>
+  <text x="727" y="758" class="legend">0.2</text><text x="879" y="758" class="legend">0.3</text>
+  <text x="1032" y="758" class="legend">0.4 AP</text>
+
+  <text x="32" y="151" class="label">DINOv2-L frozen</text><rect x="430" y="134" width="610" height="23" rx="3" fill="#2563eb"/><text x="1050" y="151" class="value">0.400</text>
+  <text x="32" y="190" class="label">SARATR-X HiViT-B finetuned</text><rect x="430" y="173" width="601" height="23" rx="3" fill="#ea580c"/><text x="1041" y="190" class="value">0.394</text>
+  <text x="32" y="229" class="label">DINOv3-L/16 web frozen</text><rect x="430" y="212" width="585" height="23" rx="3" fill="#2563eb"/><text x="1025" y="229" class="value">0.384</text>
+  <text x="32" y="268" class="label">ResNet-18 + Oriented R-CNN</text><rect x="430" y="251" width="573" height="23" rx="3" fill="#2563eb"/><text x="1013" y="268" class="value">0.376</text>
+  <text x="32" y="307" class="label">DINOv3-L/16 SAT-493M frozen</text><rect x="430" y="290" width="515" height="23" rx="3" fill="#16865a"/><text x="955" y="307" class="value">0.338</text>
+  <text x="32" y="346" class="label">ImageNet-MAE ViT-L frozen</text><rect x="430" y="329" width="496" height="23" rx="3" fill="#2563eb"/><text x="936" y="346" class="value">0.325</text>
+  <text x="32" y="385" class="label">ImageNet-MAE HiViT-B frozen</text><rect x="430" y="368" width="477" height="23" rx="3" fill="#2563eb"/><text x="917" y="385" class="value">0.313</text>
+  <text x="32" y="424" class="label">SARATR-X HiViT-B frozen</text><rect x="430" y="407" width="425" height="23" rx="3" fill="#ea580c"/><text x="865" y="424" class="value">0.279</text>
+  <text x="32" y="463" class="label">CROMA-large frozen</text><rect x="430" y="446" width="412" height="23" rx="3" fill="#16865a"/><text x="852" y="463" class="value">0.270</text>
+  <text x="32" y="502" class="label">DOFA v1 ViT-L frozen</text><rect x="430" y="485" width="409" height="23" rx="3" fill="#16865a"/><text x="849" y="502" class="value">0.268</text>
+  <text x="32" y="541" class="label">Prithvi-EO-2.0-600M frozen</text><rect x="430" y="524" width="399" height="23" rx="3" fill="#16865a"/><text x="839" y="541" class="value">0.262</text>
+  <text x="32" y="580" class="label">OlmoEarth-v1-Large frozen</text><rect x="430" y="563" width="386" height="23" rx="3" fill="#16865a"/><text x="826" y="580" class="value">0.253</text>
+  <text x="32" y="619" class="label">Galileo-base frozen</text><rect x="430" y="602" width="375" height="23" rx="3" fill="#16865a"/><text x="815" y="619" class="value">0.246</text>
+  <text x="32" y="658" class="label">Clay v1.5 ViT-L frozen</text><rect x="430" y="641" width="372" height="23" rx="3" fill="#16865a"/><text x="812" y="658" class="value">0.244</text>
+  <text x="32" y="697" class="label">Copernicus-FM ViT-L frozen</text><rect x="430" y="680" width="342" height="23" rx="3" fill="#16865a"/><text x="782" y="697" class="value">0.224</text>
+
+  <text x="32" y="794" class="subtitle">Reference results on internal annotations; see RESULTS.md for fold scores and reproducibility limits.</text>
+</svg>
