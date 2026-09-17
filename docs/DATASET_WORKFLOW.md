@@ -17,7 +17,13 @@ Use Umbra's catalog browser or [`umbra-py`](https://umbra-py.space/quickstart/)
 to search by location, date, collection geometry, and product. Prefer a
 geocoded detected product such as GEC if the goal is visual object detection.
 Keep each scene's STAC JSON beside the raster so acquisition provenance is not
-lost.
+lost. Put the chosen public asset URLs and filenames in a copy of
+`examples/umbra_download_manifest.csv`, then download and optionally checksum
+them:
+
+```bash
+python tools/download_umbra.py examples/umbra_download_manifest.csv data/umbra
+```
 
 For a cross-acquisition study, select multiple independent collects. A larger
 number of scenes from one collect does not replace diversity across dates,
@@ -36,6 +42,15 @@ Recommended rules:
 - Review empty scenes and dense parking areas explicitly.
 - Record the source scene/acquisition ID for every exported chip.
 
+Export a CVAT **image-task XML** file. This is your own export and its filename
+is arbitrary; `annotations.xml` is only an example name, not a file supplied or
+licensed by this repository. Convert the export to full-scene DOTA labels:
+
+```bash
+python tools/cvat_to_dota.py \
+  /path/to/my_cvat_export.xml build/full_scene_labels
+```
+
 The runtime consumes DOTA text files. Each image has a same-stem `.txt` file:
 
 ```text
@@ -45,18 +60,26 @@ x1 y1 x2 y2 x3 y3 x4 y4 aircraft 0
 Coordinates are pixel coordinates. The final field is the DOTA difficulty
 flag (`0` or `1`). Empty images need an empty annotation file.
 
-## 3. Export 512 x 512 chips
+## 3. Create 512 x 512 chips
 
-Export images and transformed quadrilaterals into:
+Tile the downloaded scenes and transform their quadrilaterals automatically:
+
+```bash
+python tools/tile_dota_scenes.py \
+  data/umbra build/full_scene_labels build/chips \
+  --tile-size 512 --overlap 128 --min-visible 0.7
+```
+
+The command writes:
 
 ```text
 my_chips/
 |-- images/
-|   |-- scene_a__0001.png
-|   `-- scene_b__0001.png
+|   |-- scene_a__0___0.png
+|   `-- scene_b__0___0.png
 `-- annfiles/
-    |-- scene_a__0001.txt
-    `-- scene_b__0001.txt
+    |-- scene_a__0___0.txt
+    `-- scene_b__0___0.txt
 ```
 
 The reported experiments used 512-pixel chips. When tiling a large scene,
@@ -64,27 +87,24 @@ use overlap so boundary aircraft are not systematically discarded. Decide and
 document a minimum-visible-area rule for clipped objects. Do not randomly
 split chips from the same scene or acquisition across training and validation.
 
-Validate the export before training:
+The tiler uses deterministic log-percentile intensity scaling by default and
+writes `chips_manifest.csv` plus `groups.csv`. Inspect representative chips,
+then validate the result before training:
 
 ```bash
-python tools/validate_dota_dataset.py /path/to/my_chips
+python tools/validate_dota_dataset.py build/chips
 ```
 
 ## 4. Build acquisition-grouped folds
 
-Create a CSV mapping every chip stem to its source acquisition:
-
-```csv
-stem,acquisition
-scene_a__0001,2024-02-17_UMBRA-06
-scene_b__0001,2024-05-29_UMBRA-07
-```
-
-Then build four folds, balanced approximately by labelled object count:
+The tiler already creates a `groups.csv` mapping every chip to its source
+scene. If several image files came from the same acquisition, edit the
+`acquisition` column so those files share one acquisition ID. Then build four
+folds, balanced approximately by labelled object count:
 
 ```bash
 python tools/make_acquisition_folds.py \
-  /path/to/my_chips groups.csv datasets/Umbra/umbra_cv
+  build/chips build/chips/groups.csv datasets/Umbra/umbra_cv
 python tools/validate_dota_dataset.py datasets/Umbra/umbra_cv/fold_0
 ```
 

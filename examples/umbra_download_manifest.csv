@@ -1,0 +1,3 @@
+# Populate this file with asset URLs selected from the Umbra Open Data catalog.
+# The annotation files used for the published benchmark are not included.
+url,filename,sha256

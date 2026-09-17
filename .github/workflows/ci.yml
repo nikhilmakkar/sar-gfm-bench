@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  public-data-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: pip
+      - name: Install lightweight test dependencies
+        run: python -m pip install numpy==1.26.4 Pillow==11.0.0 opencv-python-headless==4.11.0.86
+      - name: Check Python syntax
+        run: python -m compileall -q adapters backbones configs tests tools
+      - name: Exercise the public data pipeline
+        run: python tests/test_data_pipeline.py

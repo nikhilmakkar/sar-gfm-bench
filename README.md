@@ -33,8 +33,9 @@ dataset validation, fold generation, and training.
 - Oriented R-CNN configs for four-fold cross-acquisition evaluation and an
   in-domain spatial split.
 - Portable fold configs controlled by `UMBRA_CV_ROOT`.
-- Dataset validation, acquisition-grouped fold generation, training,
-  evaluation, and result-collection utilities.
+- Public-asset downloading, CVAT-to-DOTA conversion, deterministic tiling,
+  dataset validation, acquisition-grouped folds, training, evaluation, and
+  result-collection utilities.
 - CPU shape tests for the shared adapter.
 - Aggregate private-label [reference results](RESULTS.md).
 
@@ -44,8 +45,26 @@ experiment logs are included in this repository or its Git history.
 ## Prepare data
 
 Download scenes from the [Umbra Open Data Program](https://umbra.space/open-data/)
-or [AWS Open Data Registry](https://registry.opendata.aws/umbra-open-data/),
-annotate aircraft as oriented quadrilaterals, and export 512-pixel chips as:
+or [AWS Open Data Registry](https://registry.opendata.aws/umbra-open-data/).
+Populate the example manifest with the public asset URLs you selected:
+
+```bash
+python tools/download_umbra.py examples/umbra_download_manifest.csv data/umbra
+```
+
+Annotate those scenes in CVAT using four-point polygons or rotated boxes, then
+export a CVAT image-task XML file. The filename is arbitrary and the file is
+created by you; this repository does **not** provide `annotations.xml` or any
+of the annotations used for the published results. Convert and tile it with:
+
+```bash
+python tools/cvat_to_dota.py /path/to/my_cvat_export.xml build/full_scene_labels
+python tools/tile_dota_scenes.py \
+  data/umbra build/full_scene_labels build/chips \
+  --tile-size 512 --overlap 128
+```
+
+That creates the runnable dataset layout:
 
 ```text
 my_chips/
@@ -62,9 +81,9 @@ x1 y1 x2 y2 x3 y3 x4 y4 aircraft 0
 Validate the export, then build folds using a `stem,acquisition` CSV:
 
 ```bash
-python tools/validate_dota_dataset.py /path/to/my_chips
+python tools/validate_dota_dataset.py build/chips
 python tools/make_acquisition_folds.py \
-  /path/to/my_chips groups.csv datasets/Umbra/umbra_cv
+  build/chips build/chips/groups.csv datasets/Umbra/umbra_cv
 ```
 
 Never randomly separate chips from the same acquisition: doing so leaks nearly
@@ -106,7 +125,9 @@ your experiments, normally beside this repository:
 - OlmoEarth: <https://github.com/allenai/olmoearth_pretrain>
 
 Download weights from each model's official release and place them under
-`weights/` as referenced by its config. Override repository locations with
+`weights/` as referenced by its config. See [MODEL_WEIGHTS.md](MODEL_WEIGHTS.md)
+for the exact filenames, sources, code revisions, and SHA-256 values used for
+the reported runs. Override repository locations with
 `DINOV3_ROOT`, `SARATRX_ROOT`, `CLAY_REPO`, `GALILEO_REPO`, and `OLMO_REPO`.
 
 ## Run
@@ -146,9 +167,10 @@ tools/       validation, fold creation, training, testing, and aggregation
 
 ## Licensing and attribution
 
-A project-level software license has not yet been selected. Vendored
-third-party components remain subject to their upstream licenses; applicable
-texts and notices are under `third_party_licenses/`.
+Original code in this repository is licensed under the
+[Apache License 2.0](LICENSE). Vendored third-party components and pretrained
+weights remain subject to their upstream licenses; applicable texts and
+notices are under `third_party_licenses/`.
 
 Umbra Open Data is not part of this repository. Users who download or publish
 derived imagery must comply with Umbra's CC BY 4.0 attribution requirements.

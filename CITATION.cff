@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software or its reported benchmark results, please cite the
+  repository and companion article.
+title: SAR-GFM-Bench
+type: software
+authors:
+  - family-names: Makkar
+    given-names: Nikhil
+date-released: 2026-09-17
+license: Apache-2.0
+repository-code: https://github.com/nikhilmakkar/sar-gfm-bench
+url: https://nikhilmakkar.substack.com/p/performance-of-geo-foundation-models
+abstract: >-
+  A controlled implementation for comparing vision and geospatial foundation
+  models as backbones for high-resolution SAR aircraft detection.
