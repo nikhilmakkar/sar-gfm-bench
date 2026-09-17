@@ -1,4 +1,6 @@
-# SAR-GFM-Bench: Foundation Models for SAR Aircraft Detection
+# Performance of Geo Foundation Models for Object Detection on High Resolution SAR Images
+
+**SAR-GFM-Bench**
 
 [![CI](https://github.com/nikhilmakkar/sar-gfm-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/nikhilmakkar/sar-gfm-bench/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
