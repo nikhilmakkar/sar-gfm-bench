@@ -1,0 +1,27 @@
+# Data and generated artifacts
+datasets/
+data/raw/
+weights/
+work_dirs/
+outputs/
+notes/
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.tif
+*.tiff
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/
